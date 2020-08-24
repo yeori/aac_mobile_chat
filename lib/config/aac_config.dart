@@ -1,0 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
+class AacConfig {
+  final String aacHost;
+  final symbolPrefix;
+
+  AacConfig({@required this.aacHost, @required this.symbolPrefix});
+
+  static var _instance;
+
+  static AacConfig getInstance({host, symbolPrefix}) {
+    if (_instance == null) {
+      _instance = AacConfig(aacHost: host, symbolPrefix: symbolPrefix);
+    }
+    return _instance;
+  }
+}
