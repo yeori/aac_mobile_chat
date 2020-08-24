@@ -6,8 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 final _config = AacConfig.getInstance();
 final String symbolPrefix = _config.symbolPrefix;
-const double _pic_size = 80;
-const double _desc_height = 24;
+const double _pic_size = 100;
+const double _desc_height = 28;
 
 class _CachedImg {
   Map<String, Image> map = {};
@@ -29,10 +29,39 @@ var _cached = _CachedImg();
 class SymbolUI extends StatelessWidget {
   final Symbol symbol;
   SymbolUI(this.symbol);
+
+  Widget _sipda(normalImage, auxImage) {
+    return Stack(
+      children: [
+        Positioned(
+          top: _pic_size * .07,
+          right: _pic_size * .07,
+          width: _pic_size * .5,
+          height: _pic_size * .5,
+          child: normalImage,
+        ),
+        auxImage
+      ],
+    );
+  }
+
+  Widget _maseyo(normalImage, auxImage) {
+    return Stack(
+      children: [
+        Positioned(
+          top: _pic_size * .07,
+          right: _pic_size * .07,
+          left: _pic_size * .07,
+          bottom: _pic_size * .07,
+          child: normalImage,
+        ),
+        auxImage
+      ],
+    );
+  }
+
   Widget renderPic(img) {
     var config = AacConfig.getInstance();
-    var url = '${config.aacHost}/resources/images/go_sipda.png';
-    var sipda = _cached.loadImage(url, (url) => Image.network(url));
     var type = symbol.symbolType;
     Widget widget;
     if (type == 'NORMAL') {
@@ -42,18 +71,21 @@ class SymbolUI extends StatelessWidget {
         height: double.infinity,
       );
     } else if (type == 'SIPDA') {
-      widget = Stack(
-        children: [
-          Positioned(
-            top: _pic_size * .07,
-            right: _pic_size * .07,
-            width: _pic_size * .5,
-            height: _pic_size * .5,
-            child: img,
-          ),
-          sipda
-        ],
-      );
+      var url = '${config.aacHost}/resources/images/go_sipda.png';
+      var sipda = _cached.loadImage(url, (url) => Image.network(url));
+      widget = _sipda(img, sipda);
+    } else if (type == 'SILTA') {
+      var url = '${config.aacHost}/resources/images/gi_silta.png';
+      var silta = _cached.loadImage(url, (url) => Image.network(url));
+      widget = _sipda(img, silta);
+    } else if (type == 'MASEYO') {
+      var url = '${config.aacHost}/resources/images/gi_maseyo.png';
+      var maseyo = _cached.loadImage(url, (url) => Image.network(url));
+      widget = _maseyo(img, maseyo);
+    } else if (type == 'ANAYO') {
+      var url = '${config.aacHost}/resources/images/gi_anayo.png';
+      var anayo = _cached.loadImage(url, (url) => Image.network(url));
+      widget = _maseyo(img, anayo);
     }
     return widget;
   }
