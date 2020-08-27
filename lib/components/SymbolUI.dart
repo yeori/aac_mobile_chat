@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 final _config = AacConfig.getInstance();
 final String symbolPrefix = _config.symbolPrefix;
-const double _pic_size = 100;
+const double _pic_size = 85;
 const double _desc_height = 28;
 
 class _CachedImg {
@@ -118,9 +118,11 @@ class SymbolUI extends StatelessWidget {
     var url = '$symbolPrefix${symbol.pic.picturePath}';
     var img;
     if (url.toLowerCase().endsWith('svg')) {
-      img = SvgPicture.network(url, fit: BoxFit.contain);
+      img = _cached.loadImage(
+          url, (url) => SvgPicture.network(url, fit: BoxFit.contain));
     } else {
-      img = Image.network(url, fit: BoxFit.contain);
+      img = _cached.loadImage(
+          url, (url) => Image.network(url, fit: BoxFit.contain));
     }
 
     return InkWell(
@@ -158,6 +160,8 @@ class SymbolUI extends StatelessWidget {
     return SymbolUI(
       symbol: symbol,
       tabCallback: callback,
+      renderDesc: renderDesc,
+      tabmode: tabmode,
     );
   }
 }
