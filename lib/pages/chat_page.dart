@@ -46,7 +46,11 @@ class _ChatPageState extends State<ChatPage> {
       Para para = res['data'];
       setState(() {
         symbols = para.symbols.map((data) {
-          var symbol = SymbolUI(symbol: data, tabCallback: _onSymbolTouch);
+          var symbol = SymbolUI(
+            symbol: data,
+            tabCallback: _onSymbolTouch,
+            tabmode: false,
+          );
           return symbol;
         }).toList();
       });
@@ -61,10 +65,16 @@ class _ChatPageState extends State<ChatPage> {
     var symbolList = await api.symbol.search(symbol.token.defaultWord);
     setState(() {
       previewSymbols = symbolList.map((data) {
-        return SymbolUI(symbol: data, tabCallback: _onPreviewSymbolTouch);
+        return SymbolUI(
+          symbol: data,
+          tabCallback: _onPreviewSymbolTouch,
+          renderDesc: false,
+        );
       }).toList();
       _previewScrollKey = _uniqueKey();
+      minRatio = 0.0;
       initRatio = 0.2;
+      maxRatio = 1.0;
       activeSymbolIndex = index;
       DraggableScrollableActuator.reset(_symbolScrollSheet);
     });
@@ -83,12 +93,6 @@ class _ChatPageState extends State<ChatPage> {
               child: Text('OK'),
               onPressed: () {
                 Navigator.pop(context, "OK");
-              },
-            ),
-            FlatButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context, "Cancel");
               },
             ),
           ],
@@ -144,7 +148,7 @@ class _ChatPageState extends State<ChatPage> {
                 child: DraggableScrollableActuator(
                   child: DraggableScrollableSheet(
                     key: _previewScrollKey,
-                    expand: true,
+                    expand: false,
                     initialChildSize: initRatio,
                     minChildSize: minRatio,
                     maxChildSize: maxRatio,

@@ -29,7 +29,13 @@ var _cached = _CachedImg();
 class SymbolUI extends StatelessWidget {
   final Symbol symbol;
   final tabCallback;
-  SymbolUI({@required this.symbol, this.tabCallback});
+  bool renderDesc;
+  final bool tabmode;
+  SymbolUI(
+      {@required this.symbol,
+      this.tabCallback,
+      this.renderDesc = true,
+      this.tabmode = true});
 
   Widget _sipda(normalImage, auxImage) {
     return Stack(
@@ -91,6 +97,22 @@ class SymbolUI extends StatelessWidget {
     return widget;
   }
 
+  _longPressListener() {
+    if (!tabmode && tabCallback != null) {
+      tabCallback(symbol);
+    }
+  }
+
+  _tabListener() {
+    if (tabmode && tabCallback != null) {
+      tabCallback(symbol);
+    }
+  }
+
+  _getHeight() {
+    return _pic_size + (renderDesc ? _desc_height : 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     var url = '$symbolPrefix${symbol.pic.picturePath}';
@@ -102,32 +124,33 @@ class SymbolUI extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: () {
-        print('[SYMBOL] ${symbol.token.defaultWord}');
-        if (tabCallback != null) {
-          tabCallback(symbol);
-        }
-      },
+      onLongPress: _longPressListener,
+      onTap: _tabListener,
       child: Container(
-        height: _pic_size + _desc_height,
+        height: _getHeight(),
         decoration: Decorations.roundedBox(
             radius: 8.0, borderColor: Colors.transparent),
         child: IntrinsicWidth(
           child: Column(
-            children: [
-              Expanded(
-                child: _renderPic(img),
-              ),
-              Container(
-                  height: _desc_height,
-                  alignment: Alignment.center,
-                  child: Text(symbol.token.originWord,
-                      style: Theme.of(context).textTheme.headline5))
-            ],
+            children: _body(context, img),
           ),
         ),
       ),
     );
+  }
+
+  _body(context, img) {
+    var children = <Widget>[Expanded(child: _renderPic(img))];
+    if (renderDesc) {
+      children.add(Container(
+          height: _desc_height,
+          alignment: Alignment.center,
+          child: Text(
+            symbol.token.originWord,
+            style: Theme.of(context).textTheme.headline5,
+          )));
+    }
+    return children;
   }
 
   SymbolUI withPic(Pic pic, callback) {
