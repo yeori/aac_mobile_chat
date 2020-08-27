@@ -28,7 +28,8 @@ var _cached = _CachedImg();
 
 class SymbolUI extends StatelessWidget {
   final Symbol symbol;
-  SymbolUI(this.symbol);
+  final tabCallback;
+  SymbolUI({@required this.symbol, this.tabCallback});
 
   Widget _sipda(normalImage, auxImage) {
     return Stack(
@@ -60,7 +61,7 @@ class SymbolUI extends StatelessWidget {
     );
   }
 
-  Widget renderPic(img) {
+  Widget _renderPic(img) {
     var config = AacConfig.getInstance();
     var type = symbol.symbolType;
     Widget widget;
@@ -103,6 +104,9 @@ class SymbolUI extends StatelessWidget {
     return InkWell(
       onTap: () {
         print('[SYMBOL] ${symbol.token.defaultWord}');
+        if (tabCallback != null) {
+          tabCallback(symbol);
+        }
       },
       child: Container(
         height: _pic_size + _desc_height,
@@ -112,7 +116,7 @@ class SymbolUI extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: renderPic(img),
+                child: _renderPic(img),
               ),
               Container(
                   height: _desc_height,
@@ -123,6 +127,14 @@ class SymbolUI extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  SymbolUI withPic(Pic pic, callback) {
+    symbol.pic = pic;
+    return SymbolUI(
+      symbol: symbol,
+      tabCallback: callback,
     );
   }
 }

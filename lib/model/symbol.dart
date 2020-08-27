@@ -15,17 +15,20 @@ class Para {
 
 class Symbol {
   final Token token;
-  final Pic pic;
+  Pic _pic;
 
   /// SIPDA (resources/images/go_sipda.png)
   ///
   final String symbolType;
 
-  const Symbol(this.token, this.pic, this.symbolType);
+  Symbol(this.token, this._pic, this.symbolType);
+
+  get pic => _pic;
+  set pic(pic) => _pic = pic;
 
   @override
   String toString() {
-    return '${token.toString()}, ${pic.toString()}, $symbolType';
+    return '${token.toString()}, ${_pic.toString()}, $symbolType';
   }
 
   factory Symbol.parse(Map<String, dynamic> map) {
@@ -43,6 +46,10 @@ class Token {
 
   Token(this.originWord, this.defaultWord, this.type);
   factory Token.parse(Map<String, dynamic> map) {
+    if (map == null) {
+      return null;
+    }
+
     var originWord = map['originWord'];
     var defWord = map['defaultWord'];
     var type = map['type'];

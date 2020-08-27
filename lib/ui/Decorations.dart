@@ -11,4 +11,14 @@ class Decorations {
         borderRadius: BorderRadius.all(Radius.circular(radius)),
         border: Border.all(color: borderColor, width: size));
   }
+
+  static rounded({tl: 0.0, tr: 0.0}) {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(tl),
+        topRight: Radius.circular(tr),
+      ),
+    );
+  }
 }
