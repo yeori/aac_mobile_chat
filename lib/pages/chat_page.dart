@@ -72,9 +72,7 @@ class _ChatPageState extends State<ChatPage> {
         );
       }).toList();
       _previewScrollKey = _uniqueKey();
-      minRatio = 0.0;
-      initRatio = 0.2;
-      maxRatio = 1.0;
+      initRatio = 0.25;
       activeSymbolIndex = index;
       DraggableScrollableActuator.reset(_symbolScrollSheet);
     });
@@ -115,36 +113,48 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    print('W: $width');
+    int cols = width ~/ 85;
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text('이야기'),
         ),
         body: Container(
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-          color: Colors.amber[50],
-          child: Column(children: [
-            TextField(
-              controller: inputControll,
-              onSubmitted: _onEnter,
-              autofocus: false,
-              decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                onPressed: () => inputControll.clear(),
-                icon: Icon(Icons.clear),
-              )),
-            ),
-            SingleChildScrollView(
-              padding: EdgeInsets.only(top: 10.0),
-              child: Wrap(
-                  alignment: WrapAlignment.start,
-                  runSpacing: 4.0,
-                  spacing: 4.0,
-                  children: symbols),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 30.0),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                color: Colors.amber[50],
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: inputControll,
+                        onSubmitted: _onEnter,
+                        autofocus: false,
+                        decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                          onPressed: () => inputControll.clear(),
+                          icon: Icon(Icons.clear),
+                        )),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.only(top: 10.0, bottom: 300.0),
+                          child: Wrap(
+                              alignment: WrapAlignment.start,
+                              runSpacing: 4.0,
+                              spacing: 4.0,
+                              children: symbols),
+                        ),
+                      ),
+                    ]),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: DraggableScrollableActuator(
                   child: DraggableScrollableSheet(
                     key: _previewScrollKey,
@@ -155,23 +165,26 @@ class _ChatPageState extends State<ChatPage> {
                     builder: (ctx, controller) {
                       _symbolScrollSheet = ctx;
                       return Container(
-                          decoration: Decorations.rounded(tl: 20.0, tr: 20.0),
-                          child: GridView.builder(
-                              itemCount: previewSymbols.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                              ),
-                              controller: controller,
-                              itemBuilder: (ctx, int index) {
-                                return previewSymbols[index];
-                              }));
+                        padding: EdgeInsets.all(10),
+                        decoration: Decorations.rounded(tl: 20.0, tr: 20.0),
+                        child: GridView.builder(
+                          itemCount: previewSymbols.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: cols,
+                          ),
+                          controller: controller,
+                          itemBuilder: (ctx, int index) {
+                            return previewSymbols[index];
+                          },
+                        ),
+                      );
                     },
                   ),
                 ),
-              ),
-            )
-          ]),
+              )
+            ],
+          ),
         ));
   }
 }
