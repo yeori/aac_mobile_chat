@@ -29,13 +29,8 @@ var _cached = _CachedImg();
 class SymbolUI extends StatelessWidget {
   final Symbol symbol;
   final tabCallback;
-  bool renderDesc;
-  final bool tabmode;
-  SymbolUI(
-      {@required this.symbol,
-      this.tabCallback,
-      this.renderDesc = true,
-      this.tabmode = true});
+  final bool renderDesc;
+  SymbolUI({@required this.symbol, this.tabCallback, this.renderDesc = true});
 
   Widget _sipda(normalImage, auxImage) {
     return Stack(
@@ -98,14 +93,14 @@ class SymbolUI extends StatelessWidget {
   }
 
   _longPressListener() {
-    if (!tabmode && tabCallback != null) {
-      tabCallback(symbol);
+    if (tabCallback != null) {
+      tabCallback(symbol, true);
     }
   }
 
   _tabListener() {
-    if (tabmode && tabCallback != null) {
-      tabCallback(symbol);
+    if (tabCallback != null) {
+      tabCallback(symbol, false);
     }
   }
 
@@ -161,7 +156,6 @@ class SymbolUI extends StatelessWidget {
       symbol: symbol,
       tabCallback: callback,
       renderDesc: renderDesc,
-      tabmode: tabmode,
     );
   }
 }

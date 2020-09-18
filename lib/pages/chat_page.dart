@@ -49,7 +49,6 @@ class _ChatPageState extends State<ChatPage> {
           var symbol = SymbolUI(
             symbol: data,
             tabCallback: _onSymbolTouch,
-            tabmode: false,
           );
           return symbol;
         }).toList();
@@ -59,7 +58,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  _onSymbolTouch(Symbol symbol) async {
+  _renderPreview(Symbol symbol) async {
     print(symbol.toString());
     var index = symbols.indexWhere((symUI) => symUI.symbol == symbol);
     var symbolList = await api.symbol.search(symbol.token.defaultWord);
@@ -76,6 +75,18 @@ class _ChatPageState extends State<ChatPage> {
       activeSymbolIndex = index;
       DraggableScrollableActuator.reset(_symbolScrollSheet);
     });
+  }
+
+  _speak(Symbol symbol) {
+    print('speak ' + symbol.token.originWord);
+  }
+
+  _onSymbolTouch(Symbol symbol, bool longPress) async {
+    if (longPress) {
+      _renderPreview(symbol);
+    } else {
+      _speak(symbol);
+    }
   }
 
   _showAlert(BuildContext ctx, String message) async {
@@ -131,15 +142,27 @@ class _ChatPageState extends State<ChatPage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      TextField(
-                        controller: inputControll,
-                        onSubmitted: _onEnter,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                            suffixIcon: IconButton(
-                          onPressed: () => inputControll.clear(),
-                          icon: Icon(Icons.clear),
-                        )),
+                      Row(
+                        children: [
+                          Container(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Icon(Icons.chat)),
+                          Expanded(
+                            child: TextField(
+                              controller: inputControll,
+                              onSubmitted: _onEnter,
+                              autofocus: false,
+                              style: Theme.of(context).textTheme.headline5,
+                              decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: () => inputControll.clear(),
+                                icon: Icon(Icons.clear),
+                                iconSize: 24,
+                              )),
+                            ),
+                          ),
+                        ],
                       ),
                       Expanded(
                         child: SingleChildScrollView(
@@ -153,7 +176,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ]),
               ),
-              Padding(
+              Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: DraggableScrollableActuator(
                   child: DraggableScrollableSheet(
@@ -166,17 +189,44 @@ class _ChatPageState extends State<ChatPage> {
                       _symbolScrollSheet = ctx;
                       return Container(
                         padding: EdgeInsets.all(10),
-                        decoration: Decorations.rounded(tl: 20.0, tr: 20.0),
-                        child: GridView.builder(
-                          itemCount: previewSymbols.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cols,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 4,
+                                offset:
+                                    Offset(0, 3) // changes position of shadow
+                                )
+                          ],
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20.0),
+                            topRight: Radius.circular(20.0),
                           ),
-                          controller: controller,
-                          itemBuilder: (ctx, int index) {
-                            return previewSymbols[index];
-                          },
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              previewSymbols.length.toString() + ' pics',
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                            Expanded(
+                              child: GridView.builder(
+                                itemCount: previewSymbols.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: cols,
+                                ),
+                                controller: controller,
+                                itemBuilder: (ctx, int index) {
+                                  return previewSymbols[index];
+                                },
+                              ),
+                            )
+                          ],
                         ),
                       );
                     },
