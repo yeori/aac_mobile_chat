@@ -110,7 +110,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  _onPreviewSymbolTouch(Symbol sym) {
+  _onPreviewSymbolTouch(Symbol sym, bool longPress) {
     print(sym.toString());
     // symbols.firstWhere((ui) => ui.symbol)
     var s = activeSymbolIndex;
