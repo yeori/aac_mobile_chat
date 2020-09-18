@@ -1,9 +1,12 @@
+import 'package:aac_mobile_app/config/aac_config.dart';
 import 'package:aac_mobile_app/model/symbol.dart';
 import 'package:aac_mobile_app/ui/Decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:aac_mobile_app/components/SymbolUI.dart';
 import 'package:aac_mobile_app/api/api.dart' as api;
 import 'dart:math';
+
+final _config = AacConfig.getInstance();
 
 class ChatPage extends StatefulWidget {
   @override
@@ -33,6 +36,8 @@ class _ChatPageState extends State<ChatPage> {
   // var _previewSymbolController;
   BuildContext _symbolScrollSheet;
 
+  String _currentSentence = '';
+
   var inputControll = TextEditingController();
   @override
   void initState() {
@@ -41,6 +46,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   _onEnter(String sentence) async {
+    _currentSentence = sentence;
     var res = await api.parseSentence(sentence);
     if (res['success']) {
       Para para = res['data'];
@@ -78,7 +84,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   _speak(Symbol symbol) {
-    print('speak ' + symbol.token.originWord);
+    _config.tts.speak(symbol.token.originWord);
   }
 
   _onSymbolTouch(Symbol symbol, bool longPress) async {
@@ -122,6 +128,12 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  _speakSentence() {
+    if (_currentSentence.length > 0) {
+      _config.tts.speak(_currentSentence);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -146,7 +158,9 @@ class _ChatPageState extends State<ChatPage> {
                         children: [
                           Container(
                               padding: EdgeInsets.only(right: 10),
-                              child: Icon(Icons.chat)),
+                              child: GestureDetector(
+                                  onTap: _speakSentence,
+                                  child: Icon(Icons.chat))),
                           Expanded(
                             child: TextField(
                               controller: inputControll,

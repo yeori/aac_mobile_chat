@@ -1,8 +1,10 @@
+import 'package:aac_mobile_app/tts/tts_handler.dart';
 import 'package:flutter/cupertino.dart';
 
 class AacConfig {
   final String aacHost;
   final symbolPrefix;
+  final TtsHandler tts = TtsHandler();
 
   AacConfig({@required this.aacHost, @required this.symbolPrefix});
 

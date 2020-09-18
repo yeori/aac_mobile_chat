@@ -9,10 +9,13 @@ void main() async {
   var contents = await rootBundle.loadString('assets/config/dev.json');
   var config = json.decode(contents);
   print(config.toString());
-  AacConfig.getInstance(
+  var aacConfig = AacConfig.getInstance(
     host: config['aacHost'],
     symbolPrefix: config['symbolPrefix'],
   );
+  aacConfig.tts.listLangs();
+  aacConfig.tts.listVoices();
+  aacConfig.tts.listEngens();
   runApp(MyApp());
 }
 
